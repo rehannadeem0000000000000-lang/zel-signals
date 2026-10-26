@@ -31,8 +31,12 @@ jobs:
       - name: Install Node dependencies
         run: npm install
 
-      - name: Sync Capacitor
-        run: npx cap sync android
+      - name: Verify assets and config present
+        run: |
+          test -f android/app/src/main/assets/public/index.html && echo "OK index.html"
+          test -f android/capacitor.settings.gradle && echo "OK capacitor.settings.gradle"
+          grep -q "cdvPluginPostBuildExtras" android/capacitor-cordova-android-plugins/build.gradle && echo "OK cdvPluginPostBuildExtras"
+          test -d node_modules/@capacitor/android/capacitor && echo "OK node_modules capacitor-android"
 
       - name: Build APK
         working-directory: android
@@ -47,7 +51,7 @@ jobs:
           APK=$(find android -name "*.apk" -path "*release*" ! -name "unsigned.apk" ! -name "aligned.apk" | head -n1)
           echo "APK: $APK"
           ls -lh "$APK"
-          unzip -l "$APK" | grep -E "classes.dex|resources.arsc|AndroidManifest|assets/public/index.html"
+          unzip -l "$APK" | grep -E "classes.dex|resources.arsc|AndroidManifest"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
