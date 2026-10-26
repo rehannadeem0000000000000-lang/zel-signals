@@ -44,11 +44,11 @@ jobs:
           curl -sL -o /tmp/gradle.zip https://services.gradle.org/distributions/gradle-8.11.1-bin.zip
           unzip -q /tmp/gradle.zip -d /tmp
           export PATH=/tmp/gradle-8.11.1/bin:$PATH
-          gradle :app:assembleRelease --stacktrace --no-daemon
+          gradle :app:assembleDebug --stacktrace --no-daemon
 
       - name: Verify APK
         run: |
-          APK=$(find android -name "*.apk" -path "*release*" ! -name "unsigned.apk" ! -name "aligned.apk" | head -n1)
+          path: android/app/build/outputs/apk/debug/*.apk
           echo "APK: $APK"
           ls -lh "$APK"
           unzip -l "$APK" | grep -E "classes.dex|resources.arsc|AndroidManifest"
