@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Zel Signals</string>
+    <string name="title_activity_main">Zel Signals</string>
+    <string name="package_name">com.zel.signals</string>
+    <string name="custom_url_scheme">com.zel.signals</string>
+</resources>
