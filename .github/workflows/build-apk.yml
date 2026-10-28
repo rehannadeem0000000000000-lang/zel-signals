@@ -1,4 +1,4 @@
-name: Build Zel Signals APK
+name: Build Zel Trades APK
 
 on:
   push:
@@ -26,32 +26,28 @@ jobs:
       - name: Install SDK packages
         run: |
           yes | sdkmanager --licenses > /dev/null || true
-          sdkmanager "platforms;android-35" "build-tools;35.0.0" "platform-tools"
+          sdkmanager "platforms;android-36" "build-tools;36.0.0" "platform-tools"
 
       - name: Install Node dependencies
         run: npm install
 
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.14.3'
+
       - name: Build APK
         working-directory: android
-        run: |
-          curl -sL -o /tmp/gradle.zip https://services.gradle.org/distributions/gradle-8.11.1-bin.zip
-          unzip -q /tmp/gradle.zip -d /tmp
-          export PATH=/tmp/gradle-8.11.1/bin:$PATH
-          gradle :app:assembleDebug --stacktrace --no-daemon
+        run: gradle :app:assembleDebug --no-daemon
 
       - name: Show built APK
         run: |
-          echo "=== All APKs produced ==="
           find android/app/build/outputs -name "*.apk" -type f -exec ls -lh {} \;
-          echo ""
-          echo "=== Debug APK contents ==="
-          unzip -l android/app/build/outputs/apk/debug/app-debug.apk 2>/dev/null | head -20 || echo "no debug apk found"
+          unzip -l android/app/build/outputs/apk/debug/app-debug.apk 2>/dev/null | head -20
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: zel-signals-apk
-          path: |
-            android/app/build/outputs/apk/debug/*.apk
-            android/app/build/outputs/apk/release/*.apk
+          name: zel-trades-apk
+          path: android/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
